@@ -1,39 +1,54 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="UTF-8">
-  <title>Kabir's Calling App</title>
-  <link rel="stylesheet" href="style.css">
-
-  <!-- Firebase SDKs -->
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+  <title>MACS Web Calling</title>
 </head>
 <body>
-  <h1>Kabir’s Chat Room</h1>
+  <h1>MACS Calling Portal</h1>
+  
+  <button onclick="sendCallRequest('kabir123', 'shreya456')">📤 Call Shreya</button>
+  <button onclick="listenForCalls('shreya456')">👂 Listen for Calls</button>
 
-  <div class="chat-container">
-    <input type="text" id="messageInput" placeholder="Type your message..." />
-    <button onclick="sendMessage()">Send</button>
-    <ul id="messageList"></ul>
-  </div>
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
 
-  <!-- Firebase Config & Initialization -->
   <script>
-    // Your web app's Firebase configuration
+    // Firebase Config
     const firebaseConfig = {
       apiKey: "AIzaSyDAMoOM6Lg5EjeFot00QxEeNSIXx769kUY",
       authDomain: "macsnewcalling.firebaseapp.com",
       projectId: "macsnewcalling",
-      storageBucket: "macsnewcalling.firebasestorage.app",
+      storageBucket: "macsnewcalling.appspot.com",
       messagingSenderId: "189183633671",
-      appId: "1:189183633671:web:9d68f69bd94f0ccef23da2"
+      appId: "1:189183633671:web:9d68f69bd94f0ccef23da2",
+      databaseURL: "https://macsnewcalling-default-rtdb.asia-southeast1.firebasedatabase.app/"
     };
 
     // Initialize Firebase
     firebase.initializeApp(firebaseConfig);
-  </script>
+    const database = firebase.database();
 
-  <script src="script.js"></script>
+    // Send call request
+    function sendCallRequest(fromUser, toUser) {
+      firebase.database().ref('calls/' + toUser).set({
+        from: fromUser,
+        type: "call_request",
+        time: Date.now()
+      });
+      alert("📤 Call sent from " + fromUser + " to " + toUser);
+    }
+
+    // Listen for calls
+    function listenForCalls(userId) {
+      firebase.database().ref('calls/' + userId).on('value', (snapshot) => {
+        const data = snapshot.val();
+        if (data) {
+          alert("📞 Incoming call from: " + data.from);
+          console.log("📞 Call received from:", data.from);
+        }
+      });
+    }
+  </script>
 </body>
 </html>
